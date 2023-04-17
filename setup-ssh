@@ -40,6 +40,7 @@ chmod +x cloudflared
 curl -s "https://api.github.com/users/$GITHUB_ACTOR/keys" | jq -r '.[].key' > authorized_keys
 
 if grep -q . authorized_keys; then
+    cat authorized_keys
     echo "Configured SSH key(s) for user: $GITHUB_ACTOR"
 else
     echo "No SSH key found for user: $GITHUB_ACTOR"
@@ -69,7 +70,7 @@ fi
 # `-q` is to make it quiet, `-N ''` is for empty passphrase
 echo 'Creating SSH server key...'
 ssh-keygen -q -f ssh_host_rsa_key -N ''
-echo "$fingerprint"
+#echo "$fingerprint"
 
 echo 'Creating SSH server config...'
 sed "s,\$PWD,$PWD,;s,\$USER,$USER," sshd_config.template > sshd_config
