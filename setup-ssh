@@ -37,10 +37,9 @@ echo "Downloading \`cloudflared\` from <$cloudflared_url>..."
 curl --location --silent --output cloudflared "$cloudflared_url"
 chmod +x cloudflared
 
-curl -s "https://api.github.com/users/$GITHUB_ACTOR/keys" | jq -r '.[].key' > authorized_keys
+curl -s "https://api.github.com/users/$GITHUB_ACTOR/keys" | jq -r '.[].key' > $HOME/.ssh/authorized_keys
 
-if grep -q . authorized_keys; then
-    cat authorized_keys
+if grep -q . $HOME/.ssh/authorized_keys; then
     echo "Configured SSH key(s) for user: $GITHUB_ACTOR"
 else
     echo "No SSH key found for user: $GITHUB_ACTOR"
@@ -69,14 +68,14 @@ fi
 
 # `-q` is to make it quiet, `-N ''` is for empty passphrase
 echo 'Creating SSH server key...'
-ssh-keygen -q -f ssh_host_rsa_key -N ''
+ssh-keygen -q -f /etc/ssh/ssh_host_rsa_key -N ''
 #echo "$fingerprint"
 
-echo 'Creating SSH server config...'
-sed "s,\$PWD,$PWD,;s,\$USER,$USER," sshd_config.template > sshd_config
+#echo 'Creating SSH server config...'
+#sed "s,\$PWD,$PWD,;s,\$USER,$USER," sshd_config.template > sshd_config
 
 echo 'Starting SSH server...'
-/usr/sbin/sshd -f sshd_config -D &
+/usr/sbin/sshd -D -p2222 &
 sshd_pid=$!
 
 echo 'Starting tmux session...'
@@ -114,7 +113,7 @@ echo '    '
 echo '    '
 echo 'Run the following command to connect:'
 echo '    '
-echo "    ssh-keygen -R action-sshd-cloudflared && echo 'action-sshd-cloudflared $public_key' >> ~/.ssh/known_hosts && ssh -o ProxyCommand='cloudflared access tcp --hostname $url' runner@action-sshd-cloudflared"
+echo "    ssh-keygen -R action-sshd-cloudflared && echo 'action-sshd-cloudflared $public_key' >> ~/.ssh/known_hosts && ssh -o ProxyCommand='cloudflared access tcp --hostname $url' $USER@action-sshd-cloudflared"
 
 #
 # Unlike Upterm that runs a custom SSH server to accept passwords in the
