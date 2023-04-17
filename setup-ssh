@@ -67,8 +67,8 @@ else
 fi
 
 # `-q` is to make it quiet, `-N ''` is for empty passphrase
-echo 'Creating SSH server key...'
-ssh-keygen -q -f /etc/ssh/ssh_host_rsa_key -N ''
+#echo 'Creating SSH server key...'
+#ssh-keygen -q -f /etc/ssh/ssh_host_rsa_key -N ''
 #echo "$fingerprint"
 
 #echo 'Creating SSH server config...'
