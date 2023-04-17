@@ -12,7 +12,7 @@ if ! command -v tmux &> /dev/null
 then
     if command -v yum &> /dev/null
     then
-        sudo yum install tmux
+        sudo yum install -y tmux
     fi
 
     if command -v apt-get &> /dev/null
