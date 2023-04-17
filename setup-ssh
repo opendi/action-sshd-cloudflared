@@ -8,10 +8,31 @@
 # - `GITHUB_ACTOR`: GitHub username of whoever triggered the action.
 # - `GITHUB_WORKSPACE`: default path for the workflow (the tmux session will start there).
 #
+if ! command -v tmux &> /dev/null
+then
+    if command -v yum &> /dev/null
+    then
+        sudo yum install tmux
+    fi
+
+    if command -v apt-get &> /dev/null
+    then
+        sudo apt-get update
+        sudo apt-get install -y tmux
+    fi
+fi
 
 cd "$GITHUB_ACTION_PATH"
-
-cloudflared_url=https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
+ARCH=$(uname -m)
+case $ARCH in
+"aarch64")
+  ARCH=arm64
+  ;;
+*)
+  ARCH=amd64
+  ;;
+esac
+cloudflared_url=https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-$ARCH
 echo "Downloading \`cloudflared\` from <$cloudflared_url>..."
 curl --location --silent --output cloudflared "$cloudflared_url"
 chmod +x cloudflared
